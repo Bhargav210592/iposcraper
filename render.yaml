@@ -1,6 +1,6 @@
 services:
-  - type: worker
-    name: ipo-scraper
+  - type: web
+    name: ipo-scraper-api
     env: node
     plan: starter
     buildCommand: "npm install"
