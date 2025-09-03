@@ -3,6 +3,8 @@ services:
     name: ipo-scraper
     env: node
     plan: starter
-    buildCommand: "npm install"
+    buildCommand: |
+      npm install
+      npx playwright install --with-deps chromium
     startCommand: "npm start"
     autoDeploy: true
