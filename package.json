@@ -1,0 +1,12 @@
+{
+  "name": "ipo-scraper",
+  "version": "1.0.0",
+  "description": "Scraper for IPO names from ipostatus.kfintech.com using Playwright",
+  "type": "module",
+  "scripts": {
+    "start": "node scraper.js"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
