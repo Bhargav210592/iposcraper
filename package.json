@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node scraper.js",
-    "postinstall": "npm install playwright"
+    "postinstall": " yarn playwright install"
   },
   "dependencies": {
     "playwright": "^1.48.0"
