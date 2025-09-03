@@ -4,7 +4,8 @@
   "description": "Scraper for IPO names from ipostatus.kfintech.com using Playwright",
   "type": "module",
   "scripts": {
-    "start": "node scraper.js"
+    "start": "node scraper.js",
+    "postinstall": "npx playwright install --with-deps chromium"
   },
   "dependencies": {
     "playwright": "^1.48.0"
