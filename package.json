@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node scraper.js",
-    "postinstall": "npx playwright install --with-deps chromium"
+    "postinstall": "npm install playwright"
   },
   "dependencies": {
     "playwright": "^1.48.0"
