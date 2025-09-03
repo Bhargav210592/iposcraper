@@ -1,39 +1,53 @@
+import express from "express";
 import { chromium } from "playwright";
-import fs from "fs/promises";
 
-async function main() {
-  console.log("🚀 Launching browser...");
-  const browser = await chromium.launch({
-    headless: false,
-    args: ["--no-sandbox", "--disable-gpu"]
-  });
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-  const page = await browser.newPage();
+app.get("/scrape", async (req, res) => {
+  try {
+    console.log("🚀 Launching browser...");
+    const browser = await chromium.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-gpu"]
+    });
 
-  console.log("🌐 Navigating...");
-  await page.goto("https://ipostatus.kfintech.com/", { waitUntil: "domcontentloaded" });
+    const page = await browser.newPage();
 
-  console.log("📌 Clicking dropdown...");
-  await page.click(".depository-select");
+    console.log("🌐 Navigating...");
+    await page.goto("https://ipostatus.kfintech.com/", { waitUntil: "domcontentloaded" });
 
-  console.log("⌛ Waiting for IPO list...");
-  const ul = await page.waitForSelector("ul#mui-2", { timeout: 15000 });
+    console.log("📌 Clicking dropdown...");
+    await page.click(".depository-select");
 
-  const items = await ul.evaluate(() =>
-    Array.from(document.querySelectorAll("ul#mui-2 li")).map(li => li.textContent.trim())
-  );
+    console.log("⌛ Waiting for IPO list...");
+    const ul = await page.waitForSelector("ul#mui-2", { timeout: 15000 });
 
-  console.log(`✅ Found ${items.length} IPOs`);
-  await fs.mkdir("/output", { recursive: true });
-  await fs.writeFile("/output/ipos.json", JSON.stringify(items, null, 2), "utf-8");
+    const items = await ul.evaluate(() =>
+      Array.from(document.querySelectorAll("ul#mui-2 li")).map(li => li.textContent.trim())
+    );
 
-  await page.screenshot({ path: "/output/debug.png", fullPage: true });
+    await browser.close();
 
-  await browser.close();
-  console.log("📂 Results saved to /output/ipos.json & /output/debug.png");
-}
+    console.log(`✅ Found ${items.length} IPOs`);
+    res.json({
+      status: "success",
+      count: items.length,
+      ipos: items
+    });
+  } catch (err) {
+    console.error("❌ Scraper failed:", err);
+    res.status(500).json({
+      status: "error",
+      message: err.message
+    });
+  }
+});
 
-main().catch(err => {
-  console.error("❌ Scraper failed:", err);
-  process.exit(1);
+app.get("/", (req, res) => {
+  res.send("✅ IPO Scraper API is running. Use /scrape to fetch IPO list.");
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
